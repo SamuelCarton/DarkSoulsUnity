@@ -125,6 +125,45 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Player Action"",
+            ""id"": ""87df3b6c-bf01-4428-8929-a1a8f7a6fea7"",
+            ""actions"": [
+                {
+                    ""name"": ""Roll"",
+                    ""type"": ""Button"",
+                    ""id"": ""b0c11971-28ea-4011-b470-8a17c8c59a7f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""f3d1147b-397c-4d1a-88e8-26eae14719ba"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Roll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c29b1b68-a0a2-4369-9c51-70c35fff8e0c"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Roll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -133,6 +172,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_PalyerMouvement = asset.FindActionMap("Palyer Mouvement", throwIfNotFound: true);
         m_PalyerMouvement_Mouvement = m_PalyerMouvement.FindAction("Mouvement", throwIfNotFound: true);
         m_PalyerMouvement_Camera = m_PalyerMouvement.FindAction("Camera", throwIfNotFound: true);
+        // Player Action
+        m_PlayerAction = asset.FindActionMap("Player Action", throwIfNotFound: true);
+        m_PlayerAction_Roll = m_PlayerAction.FindAction("Roll", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -229,9 +271,46 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         }
     }
     public PalyerMouvementActions @PalyerMouvement => new PalyerMouvementActions(this);
+
+    // Player Action
+    private readonly InputActionMap m_PlayerAction;
+    private IPlayerActionActions m_PlayerActionActionsCallbackInterface;
+    private readonly InputAction m_PlayerAction_Roll;
+    public struct PlayerActionActions
+    {
+        private @PlayerControls m_Wrapper;
+        public PlayerActionActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Roll => m_Wrapper.m_PlayerAction_Roll;
+        public InputActionMap Get() { return m_Wrapper.m_PlayerAction; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(PlayerActionActions set) { return set.Get(); }
+        public void SetCallbacks(IPlayerActionActions instance)
+        {
+            if (m_Wrapper.m_PlayerActionActionsCallbackInterface != null)
+            {
+                @Roll.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnRoll;
+                @Roll.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnRoll;
+                @Roll.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnRoll;
+            }
+            m_Wrapper.m_PlayerActionActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Roll.started += instance.OnRoll;
+                @Roll.performed += instance.OnRoll;
+                @Roll.canceled += instance.OnRoll;
+            }
+        }
+    }
+    public PlayerActionActions @PlayerAction => new PlayerActionActions(this);
     public interface IPalyerMouvementActions
     {
         void OnMouvement(InputAction.CallbackContext context);
         void OnCamera(InputAction.CallbackContext context);
+    }
+    public interface IPlayerActionActions
+    {
+        void OnRoll(InputAction.CallbackContext context);
     }
 }

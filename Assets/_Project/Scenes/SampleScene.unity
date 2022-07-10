@@ -1566,7 +1566,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   anim: {fileID: 0}
+  inputHandler: {fileID: 0}
+  playerLocomotion: {fileID: 0}
   canRotate: 1
+--- !u!114 &235143495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 235143491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c4a35c624034854f8d1e2399845a352, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &240484745
 GameObject:
   m_ObjectHideFlags: 0
@@ -4661,6 +4675,7 @@ GameObject:
   - component: {fileID: 1165997589}
   - component: {fileID: 1165997592}
   - component: {fileID: 1165997591}
+  - component: {fileID: 1165997593}
   m_Layer: 10
   m_Name: Player
   m_TagString: Untagged
@@ -4748,6 +4763,21 @@ MonoBehaviour:
   moveAmount: 0
   mouseX: 0
   mouseY: 0
+  b_Input: 0
+  rollFlag: 0
+  isInteracting: 0
+--- !u!114 &1165997593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1165997587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6630e5114c64814ba7246c50273672d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1258682955
 GameObject:
   m_ObjectHideFlags: 0

@@ -36,6 +36,25 @@ namespace SamuelCarton{
         Vector3 normalVector;
         Vector3 targetPosition;
 
+        public void HandleMovement(float delta){
+            moveDirection = cameraObject.forward * inputHandler.vertical;
+            moveDirection += cameraObject.right * inputHandler.horizontal;
+            moveDirection.Normalize();
+            moveDirection.y = 0;
+
+            float speed = movementSpeed;
+            moveDirection *= speed;
+
+            Vector3 projectedVelocity = Vector3.ProjectOnPlane(moveDirection, normalVector);
+            rigidbody.velocity = projectedVelocity;
+
+            animatorHandler.UpdateAnimatorValues(inputHandler.moveAmount, 0);
+
+            if(animatorHandler.canRotate){
+                HandleRotation(delta);
+            }
+        }
+
         private void HandleRotation(float delta){
             Vector3 targetDir = Vector3.zero;
             float moveOverride = inputHandler.moveAmount;
@@ -58,29 +77,33 @@ namespace SamuelCarton{
             myTransform.rotation = targetRotation;
         }
 
+        public void HandleRollingAndSprinting(float delta){
+            if(animatorHandler.anim.GetBool("IsInteracting"))
+                return;
+                
+            if(inputHandler.rollFlag){
+                moveDirection = cameraObject.forward * inputHandler.vertical;
+                moveDirection += cameraObject.right * inputHandler.horizontal;
+
+                if(inputHandler.moveAmount > 0 ){
+                    animatorHandler.PlayTargetAnimation("Roll", true);
+                    moveDirection.y = 0;
+                    Quaternion rollDirection = Quaternion.LookRotation(moveDirection);
+                    myTransform.rotation = rollDirection;
+                }else{
+                    animatorHandler.PlayTargetAnimation("Jump Back", true);
+                }
+            }
+        }
+
         #endregion
     
         private void Update() {
             float delta = Time.deltaTime;
 
             inputHandler.TickInput(delta);
-            
-            moveDirection = cameraObject.forward * inputHandler.vertical;
-            moveDirection += cameraObject.right * inputHandler.horizontal;
-            moveDirection.Normalize();
-            moveDirection.y = 0;
-
-            float speed = movementSpeed;
-            moveDirection *= speed;
-
-            Vector3 projectedVelocity = Vector3.ProjectOnPlane(moveDirection, normalVector);
-            rigidbody.velocity = projectedVelocity;
-
-            animatorHandler.UpdateAnimatorValues(inputHandler.moveAmount, 0);
-
-            if(animatorHandler.canRotate){
-                HandleRotation(delta);
-            }
+            HandleMovement(delta);
+            HandleRollingAndSprinting(delta);
         }
     }
 }
